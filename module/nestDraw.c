@@ -44,6 +44,8 @@ misc draw calls
 #include <dixfontstr.h>
 
 #include "nest.h"
+#include "nestDraw.h"
+#include "nestMain.h"
 
 #define LOG_LEVEL 1
 #define LLOGLN(_level, _args) \

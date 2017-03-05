@@ -71,6 +71,42 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define RegionUnionRect DONOTUSE
 #endif
 
+struct _nestPointer
+{
+    int cursor_x;
+    int cursor_y;
+    int old_button_mask;
+    int button_mask;
+    DeviceIntPtr device;
+    int old_cursor_x;
+    int old_cursor_y;
+};
+typedef struct _nestPointer nestPointer;
+
+struct _nestKeyboard
+{
+    int pause_spe;
+    int ctrl_down;
+    int alt_down;
+    int shift_down;
+    int tab_down;
+    /* this is toggled every time num lock key is released, not like the
+       above *_down vars */
+    int scroll_lock_down;
+    DeviceIntPtr device;
+};
+typedef struct _nestKeyboard nestKeyboard;
+
+struct _nestPixmapRec
+{
+    int status;
+    int kind_width;
+};
+typedef struct _nestPixmapRec nestPixmapRec;
+typedef struct _nestPixmapRec * nestPixmapPtr;
+#define GETPIXPRIV(_dev, _pPixmap) (nestPixmapPtr) \
+nestGetPixmapPrivate(&((_pPixmap)->devPrivates),  (_dev)->privateKeyRecPixmap)
+
 struct _nestCounts
 {
     CARD32 nestFillSpansCallCount; /* 1 */
@@ -151,14 +187,6 @@ struct _nestRec
     nestPixmapRec screenPriv;
 
     struct _nestCounts counts;
-
-    /* multimon */
-    int extra_outputs;
-    RRCrtcPtr crtc[16];
-    RROutputPtr output[16];
-    struct monitor_info minfo[16]; /* client monitor data */
-    int doMultimon;
-    int monitorCount;
 
 };
 typedef struct _nestRec nestRec;
