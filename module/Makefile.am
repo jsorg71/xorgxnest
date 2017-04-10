@@ -61,7 +61,7 @@ nestFillPolygon.c nestPolyFillRect.c nestPolyFillArc.c nestPolyText8.c \
 nestPolyText16.c nestImageText8.c nestImageText16.c nestImageGlyphBlt.c \
 nestPolyGlyphBlt.c nestPushPixels.c nestCursor.c nestMain.c nestRandR.c \
 nestMisc.c nestReg.c nestComposite.c nestGlyphs.c nestPixmap.c nestInput.c \
-nestClientCon.c nestCapture.c nestTrapezoids.c nestXv.c nestSimd.c \
+nestTrapezoids.c nestXv.c nestSimd.c \
 $(EXTRA_SOURCES)
 
 libxorgxnest_la_LIBADD =
