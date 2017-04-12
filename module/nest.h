@@ -135,6 +135,8 @@ struct _nestCounts
     CARD32 callCount[64 - 23];
 };
 
+typedef int (*yuv_to_rgb32_proc)(unsigned char *yuvs, int width, int height, int *rgbs);
+
 /* move this to common header */
 struct _nestRec
 {
@@ -187,6 +189,15 @@ struct _nestRec
     nestPixmapRec screenPriv;
 
     struct _nestCounts counts;
+
+    yuv_to_rgb32_proc i420_to_rgb32;
+    yuv_to_rgb32_proc yv12_to_rgb32;
+    yuv_to_rgb32_proc yuy2_to_rgb32;
+    yuv_to_rgb32_proc uyvy_to_rgb32;
+    char *xv_data;
+    int xv_data_bytes;
+    int xv_timer_scheduled;
+    OsTimerPtr xv_timer;
 
 };
 typedef struct _nestRec nestRec;

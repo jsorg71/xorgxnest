@@ -72,9 +72,9 @@ nestTrapezoids(CARD8 op, PicturePtr pSrc, PicturePtr pDst,
 
     LLOGLN(10, ("nestTrapezoids:"));
     pScreen = pDst->pDrawable->pScreen;
-    dev = rdpGetDevFromScreen(pScreen);
+    dev = nestGetDevFromScreen(pScreen);
     ps = GetPictureScreen(pScreen);
     /* do original call */
-    rdpTrapezoidsOrg(ps, dev, op, pSrc, pDst, maskFormat, xSrc, ySrc,
-                     ntrap, traps);
+    nestTrapezoidsOrg(ps, dev, op, pSrc, pDst, maskFormat, xSrc, ySrc,
+                      ntrap, traps);
 }
