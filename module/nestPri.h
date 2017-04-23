@@ -31,7 +31,7 @@ to deal with privates changing in xorg versions
 #include <screenint.h>
 #include <gc.h>
 
-typedef void* nestDevPrivateKey;
+typedef void *nestDevPrivateKey;
 
 extern _X_EXPORT nestDevPrivateKey
 nestAllocateGCPrivate(ScreenPtr pScreen, int bytes);
@@ -39,11 +39,11 @@ extern _X_EXPORT nestDevPrivateKey
 nestAllocatePixmapPrivate(ScreenPtr pScreen, int bytes);
 extern _X_EXPORT nestDevPrivateKey
 nestAllocateWindowPrivate(ScreenPtr pScreen, int bytes);
-extern _X_EXPORT void*
+extern _X_EXPORT void *
 nestGetGCPrivate(GCPtr pGC, nestDevPrivateKey key);
-extern _X_EXPORT void*
+extern _X_EXPORT void *
 nestGetPixmapPrivate(PixmapPtr pPixmap, nestDevPrivateKey key);
-extern _X_EXPORT void*
+extern _X_EXPORT void *
 nestGetWindowPrivate(WindowPtr pWindow, nestDevPrivateKey key);
 extern _X_EXPORT int
 nestPrivateInit(void);

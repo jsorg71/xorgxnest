@@ -56,8 +56,8 @@ to deal with privates changing in xorg versions
 #define XNEST_PRI 3
 #endif
 
-#define PTR2INT(_ptr) ((int)    ((long) ((void*) (_ptr))))
-#define INT2PTR(_int) ((void *) ((long) ((int)   (_int))))
+#define PTR2INT(_ptr) ((int)    ((long) ((void *) (_ptr))))
+#define INT2PTR(_int) ((void *) ((long) ((int)    (_int))))
 
 #if XNEST_PRI == 3
 static DevPrivateKeyRec g_privateKeyRecGC;

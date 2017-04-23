@@ -9,8 +9,6 @@ AM_CFLAGS = \
   $(EXTRA_FLAGS)
 
 noinst_HEADERS = \
-  nestCapture.h \
-  nestClientCon.h \
   nestComposite.h \
   nestCopyArea.h \
   nestCopyPlane.h \
@@ -44,7 +42,6 @@ noinst_HEADERS = \
   nestRandR.h \
   nestReg.h \
   nestSetSpans.h \
-  nestSimd.h \
   nestTrapezoids.h \
   nestXv.h
 
@@ -61,7 +58,7 @@ nestFillPolygon.c nestPolyFillRect.c nestPolyFillArc.c nestPolyText8.c \
 nestPolyText16.c nestImageText8.c nestImageText16.c nestImageGlyphBlt.c \
 nestPolyGlyphBlt.c nestPushPixels.c nestCursor.c nestMain.c nestRandR.c \
 nestMisc.c nestReg.c nestComposite.c nestGlyphs.c nestPixmap.c nestInput.c \
-nestTrapezoids.c nestXv.c nestSimd.c \
+nestTrapezoids.c nestXv.c \
 $(EXTRA_SOURCES)
 
 libxorgxnest_la_LIBADD =
