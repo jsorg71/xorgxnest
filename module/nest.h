@@ -149,6 +149,7 @@ struct _nestRec
     int bitsPerPixel;
     int Bpp;
     int Bpp_mask;
+    int pad0;
     char *pfbMemory_alloc;
     char *pfbMemory;
     ScreenPtr pScreen;
@@ -198,6 +199,8 @@ struct _nestRec
     int xv_data_bytes;
     int xv_timer_scheduled;
     OsTimerPtr xv_timer;
+
+    struct _nestXClientRec *client;
 
 };
 typedef struct _nestRec nestRec;

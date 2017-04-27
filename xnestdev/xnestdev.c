@@ -29,6 +29,9 @@ This is the main driver file
 #include <stdlib.h>
 #include <string.h>
 
+#include <X11/X.h>
+#include <X11/Xproto.h>
+
 /* this should be before all X11 .h files */
 #include <xorg-server.h>
 #include <xorgVersion.h>
@@ -37,8 +40,13 @@ This is the main driver file
 #include <xf86.h>
 #include <xf86_OSproc.h>
 
+#define USE_FB 0
+
 #include <mipointer.h>
+#if USE_FB
 #include <fb.h>
+#endif
+#include <mibstore.h>
 #include <micmap.h>
 #include <mi.h>
 #include <randrstr.h>
@@ -57,6 +65,7 @@ This is the main driver file
 #include "nestGlyphs.h"
 #include "nestPixmap.h"
 #include "nestXv.h"
+#include "nestXClient.h"
 
 #define LLOG_LEVEL 1
 #define LLOGLN(_level, _args) \
@@ -434,6 +443,8 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
 
     dev->pScreen = pScreen;
 
+    dev->client = nestXClientCreate(NULL);
+
     miClearVisualTypes();
     miSetVisualTypes(pScrn->depth, miGetDefaultVisualMask(pScrn->depth),
                      pScrn->rgbBits, TrueColor);
@@ -445,6 +456,7 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
     dev->paddedWidthInBytes = PixmapBytePad(dev->width, dev->depth);
     dev->bitsPerPixel = nestBitsPerPixel(dev->depth);
     dev->sizeInBytes = dev->paddedWidthInBytes * dev->height;
+#if USE_FB
     LLOGLN(0, ("nestScreenInit: pfbMemory bytes %d", dev->sizeInBytes));
     dev->pfbMemory_alloc = g_new0(char, dev->sizeInBytes + 16);
     dev->pfbMemory = (char *) NESTALIGN(dev->pfbMemory_alloc, 16);
@@ -457,7 +469,7 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
         LLOGLN(0, ("nestScreenInit: fbScreenInit failed"));
         return FALSE;
     }
-
+#endif
 #if XORG_VERSION_CURRENT < XORG_VERSION_NUMERIC(1, 14, 0, 0, 0)
     /* 1.13 has this function, 1.14 and up does not */
     miInitializeBackingStore(pScreen);
@@ -474,6 +486,8 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
     }
 #endif
 
+    LLOGLN(0, ("1"));
+
     vis = pScreen->visuals + (pScreen->numVisuals - 1);
     while (vis >= pScreen->visuals)
     {
@@ -488,9 +502,16 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
         }
         vis--;
     }
+#if USE_FB
     fbPictureInit(pScreen, 0, 0);
+#endif
+
+    LLOGLN(0, ("2"));
+
     xf86SetBlackWhitePixels(pScreen);
     xf86SetBackingStore(pScreen);
+
+    LLOGLN(0, ("3"));
 
 #if 1
     /* hardware cursor */
@@ -502,9 +523,9 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
     dev->pCursorFuncs = xf86GetPointerScreenFuncs();
     miDCInitialize(pScreen, dev->pCursorFuncs);
 #endif
-
+#if USE_FB
     fbCreateDefColormap(pScreen);
-
+#endif
     /* must assign this one */
     pScreen->SaveScreen = nestSaveScreen;
 
@@ -661,13 +682,14 @@ nestProbe(DriverPtr drv, int flags)
     {
         return FALSE;
     }
+#if USE_FB
     /* fbScreenInit, fbPictureInit, ... */
     if (!xf86LoadDrvSubModule(drv, "fb"))
     {
         LLOGLN(0, ("nestProbe: xf86LoadDrvSubModule for fb failed"));
         return FALSE;
     }
-
+#endif
     num_dev_sections = xf86MatchDevice(XNEST_DRIVER_NAME, &dev_sections);
     if (num_dev_sections <= 0)
     {
