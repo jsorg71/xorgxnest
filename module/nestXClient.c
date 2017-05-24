@@ -17,6 +17,8 @@ OPEN GROUP BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
 AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+X11 client calls
+
 */
 
 #if defined(HAVE_CONFIG_H)
@@ -29,11 +31,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 
 #include "nestXClient.h"
-
-void
-ErrorF(const char * f, ...);
+#include "nestMisc.h"
 
 #define LOG_LEVEL 1
 #define LLOGLN(_level, _args) \
@@ -44,13 +45,17 @@ nestXClientPtr
 nestXClientCreate(const char *diplay_name)
 {
     nestXClientPtr client;
+    long mask;
+    XVisualInfo vi;
+    XVisualInfo *xnestVisuals;
+    int xnestNumVisuals;
 
-    client = (nestXClientPtr) calloc(1, sizeof(nestXClientRec));
+    client = g_new0(nestXClientRec, 1);
     if (client == NULL)
     {
         return NULL;
     }
-    client->display = (void *) XOpenDisplay(diplay_name);
+    client->display = XOpenDisplay(diplay_name);
     if (client->display == NULL)
     {
         LLOGLN(0, ("nestXClientCreate: connected to %s failed",
@@ -63,7 +68,19 @@ nestXClientCreate(const char *diplay_name)
         LLOGLN(0, ("nestXClientCreate: connected to %s ok",
                XDisplayName(diplay_name)));
     }
-    client->screen = DefaultScreen(client->display);
+    client->screen = XDefaultScreen(client->display);
+    memset(&vi, 0, sizeof(vi));
+    vi.screen = client->screen;
+    mask = VisualScreenMask;
+    xnestVisuals = XGetVisualInfo(client->display, mask, &vi,
+                                  &xnestNumVisuals);
+    if (xnestVisuals == NULL)
+    {
+        XCloseDisplay(client->display);
+        free(client);
+        return NULL;
+    }
+    XFree(xnestVisuals);
     return client;
 }
 

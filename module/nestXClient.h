@@ -25,8 +25,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /* use simple types here */
 struct _nestXClientRec
 {
-    void *display;
-    int screen;
+    struct _XDisplay *display; /* Display * */
+    int screen;                /* XDefaultScreen */
+    int pad0;
 };
 typedef struct _nestXClientRec nestXClientRec;
 typedef nestXClientRec *nestXClientPtr;
