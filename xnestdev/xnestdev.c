@@ -46,7 +46,9 @@ This is the main driver file
 #if USE_FB
 #include <fb.h>
 #endif
+#if XORG_VERSION_CURRENT < XORG_VERSION_NUMERIC(1, 14, 0, 0, 0)
 #include <mibstore.h>
+#endif
 #include <micmap.h>
 #include <mi.h>
 #include <randrstr.h>
