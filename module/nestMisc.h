@@ -28,8 +28,6 @@ the rest
 #include <xorgVersion.h>
 #include <xf86.h>
 
-#include <X11/Xos.h>
-
 extern _X_EXPORT int
 nestBitsPerPixel(int depth);
 extern _X_EXPORT void

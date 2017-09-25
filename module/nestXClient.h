@@ -22,13 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef __NESTXCLIENT_H
 #define __NESTXCLIENT_H
 
-/* use simple types here */
-struct _nestXClientRec
-{
-    struct _XDisplay *display; /* Display * */
-    int screen;                /* XDefaultScreen */
-    int pad0;
-};
+struct _nestXClientRec; /* defined in nestXClient.c */
 typedef struct _nestXClientRec nestXClientRec;
 typedef nestXClientRec *nestXClientPtr;
 
@@ -36,5 +30,7 @@ extern _X_EXPORT nestXClientPtr
 nestXClientCreate(const char *diplay_name);
 extern _X_EXPORT int
 nestXClientDestroy(nestXClientPtr client);
+extern _X_EXPORT int
+nestXClientSetupScreen(nestPtr dev);
 
 #endif

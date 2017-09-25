@@ -39,6 +39,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "nestDraw.h"
 #include "nestReg.h"
 #include "nestCopyArea.h"
+#include "nestXClient.h"
 
 #define LOG_LEVEL 1
 #define LLOGLN(_level, _args) \

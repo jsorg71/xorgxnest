@@ -29,9 +29,6 @@ This is the main driver file
 #include <stdlib.h>
 #include <string.h>
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
-
 /* this should be before all X11 .h files */
 #include <xorg-server.h>
 #include <xorgVersion.h>
@@ -46,12 +43,17 @@ This is the main driver file
 #if USE_FB
 #include <fb.h>
 #endif
-#if XORG_VERSION_CURRENT < XORG_VERSION_NUMERIC(1, 14, 0, 0, 0)
-#include <mibstore.h>
-#endif
 #include <micmap.h>
 #include <mi.h>
+
+#if XORG_VERSION_CURRENT < XORG_VERSION_NUMERIC(1, 14, 0, 0, 0)
+/* including fb.h includes mibstore.h but if we do not use fb.h ... */
+#include <mibstore.h>
+#endif
+
+#ifdef RANDR
 #include <randrstr.h>
+#endif
 
 #include <xf86Modes.h>
 
@@ -453,7 +455,7 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
     miSetPixmapDepths();
     LLOGLN(0, ("nestScreenInit: virtualX %d virtualY %d rgbBits %d depth %d",
            pScrn->virtualX, pScrn->virtualY, pScrn->rgbBits, pScrn->depth));
-
+    LLOGLN(0, ("nestScreenInit: width %d height %d", dev->width, dev->height));
     dev->depth = pScrn->depth;
     dev->paddedWidthInBytes = PixmapBytePad(dev->width, dev->depth);
     dev->bitsPerPixel = nestBitsPerPixel(dev->depth);
@@ -471,6 +473,8 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
         LLOGLN(0, ("nestScreenInit: fbScreenInit failed"));
         return FALSE;
     }
+#else
+    nestXClientSetupScreen(dev);
 #endif
 #if XORG_VERSION_CURRENT < XORG_VERSION_NUMERIC(1, 14, 0, 0, 0)
     /* 1.13 has this function, 1.14 and up does not */
