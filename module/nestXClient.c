@@ -43,10 +43,7 @@ This should be the one and only file that calls Xlib functions
 #include "nestXClient.h"
 #include "nestMisc.h"
 
-#define GC XlibGC /* trick to get past the GC redefined issue */
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#undef GC
+#include "Xnest.h"
 
 #define LOG_LEVEL 1
 #define LLOGLN(_level, _args) \
@@ -54,6 +51,9 @@ This should be the one and only file that calls Xlib functions
 
 #define MAXDEPTH 32
 #define MAXVISUALSPERDEPTH 256
+#define UNDEFINED -1
+#define MAXCMAPS 1
+#define MINCMAPS 1
 
 struct _nestXClientRec
 {
@@ -64,6 +64,8 @@ struct _nestXClientRec
     int xnestNumVisuals;
     XVisualInfo *xnestVisuals;
     int xnestDefaultVisualIndex;
+    Pixel blackPixel;
+    Pixel whitePixel;
 };
 
 /******************************************************************************/
@@ -129,15 +131,19 @@ nestXClientSetupScreen(nestPtr dev)
     VisualPtr svi;
     int numVisuals;
     int index;
+    int jndex;
     int rootDepth;
     DepthPtr depths;
     int numDepths;
+    int depthIndex;
     VisualID defaultVisual;
 
     client = dev->client;
     client->screen = XDefaultScreen(client->display);
     client->visual = XDefaultVisual(client->display, client->screen);
     client->visualid = XVisualIDFromVisual(client->visual);
+    client->blackPixel = XBlackPixel(client->display, client->screen);
+    client->whitePixel = XWhitePixel(client->display, client->screen);
     memset(&vi, 0, sizeof(vi));
     vi.screen = client->screen;
     mask = VisualScreenMask;
@@ -148,24 +154,22 @@ nestXClientSetupScreen(nestPtr dev)
         LLOGLN(0, ("nestXClientSetupScreen: error client xnestVisuals is nil"));
         return 1;
     }
-    LLOGLN(0, ("nestXClientSetupScreen: xnestNumVisuals %d",
-           client->xnestNumVisuals));
-
-
+    LLOGLN(0, ("nestXClientSetupScreen: xnestNumVisuals %d "
+           "sizeof(XVisualInfo) %zu sizeof(VisualID) %zu",
+           client->xnestNumVisuals, sizeof(XVisualInfo), sizeof(VisualID)));
     depths = g_new0(DepthRec, MAXDEPTH);
     depths[0].depth = 1;
     depths[0].numVids = 0;
     depths[0].vids = g_new0(VisualID, MAXVISUALSPERDEPTH);
     numDepths = 1;
-
-
     visuals = g_new0(VisualRec, client->xnestNumVisuals);
     numVisuals = client->xnestNumVisuals;
     for (index = 0; index < client->xnestNumVisuals; index++)
     {
         svi = visuals + index;
         cvi = client->xnestVisuals + index;
-        LLOGLN(0, ("nestXClientSetupScreen: bits_per_rgb %d depth %d", cvi->bits_per_rgb, cvi->depth));
+        LLOGLN(0, ("nestXClientSetupScreen: bits_per_rgb %d depth %d screen %d",
+               cvi->bits_per_rgb, cvi->depth, cvi->screen));
         svi->class = cvi->class;
         svi->bitsPerRGBValue = cvi->bits_per_rgb;
         svi->ColormapEntries = cvi->colormap_size;
@@ -176,6 +180,31 @@ nestXClientSetupScreen(nestPtr dev)
         svi->offsetRed = offset(cvi->red_mask);
         svi->offsetGreen = offset(cvi->green_mask);
         svi->offsetBlue = offset(cvi->blue_mask);
+        svi->vid = FakeClientID(0);
+        depthIndex = UNDEFINED;
+        for (jndex = 0; jndex < numDepths; jndex++)
+        {
+            if (depths[jndex].depth == cvi->depth)
+            {
+                depthIndex = jndex;
+                break;
+            }
+        }
+        if (depthIndex == UNDEFINED)
+        {
+            depthIndex = numDepths;
+            depths[depthIndex].depth = cvi->depth;
+            depths[depthIndex].numVids = 0;
+            depths[depthIndex].vids = g_new0(VisualID, MAXVISUALSPERDEPTH);
+            numDepths++;
+        }
+        if (depths[depthIndex].numVids >= MAXVISUALSPERDEPTH)
+        {
+            FatalError("Visual table overflow");
+        }
+        depths[depthIndex].vids[depths[depthIndex].numVids] =
+                visuals[index].vid;
+        depths[depthIndex].numVids++;
         if (cvi->visualid == client->visualid)
         {
             LLOGLN(0, ("nestXClientSetupScreen: found default visual at "
@@ -183,13 +212,24 @@ nestXClientSetupScreen(nestPtr dev)
             client->xnestDefaultVisualIndex = index;
         }
     }
+    LLOGLN(0, ("nestXClientSetupScreen: numVisuals %d numDepths %d",
+           numVisuals, numDepths));
     defaultVisual = visuals[client->xnestDefaultVisualIndex].vid;
     rootDepth = visuals[client->xnestDefaultVisualIndex].nplanes;
-    miScreenInit(dev->pScreen, NULL, dev->width, dev->height, 1, 1, dev->width,
-                 rootDepth,
-                 numDepths, depths,
+    LLOGLN(0, ("nestXClientSetupScreen: defaultVisual %d rootDepth %d",
+           defaultVisual, rootDepth));
+    miScreenInit(dev->pScreen, NULL, dev->width, dev->height, 1, 1,
+                 dev->width, rootDepth, numDepths, depths,
                  defaultVisual, /* root visual */
                  numVisuals, visuals);
+
+    dev->pScreen->defColormap = (Colormap) FakeClientID(0);
+    dev->pScreen->minInstalledCmaps = MINCMAPS;
+    dev->pScreen->maxInstalledCmaps = MAXCMAPS;
+    dev->pScreen->backingStoreSupport = NotUseful;
+    dev->pScreen->saveUnderSupport = NotUseful;
+    dev->pScreen->whitePixel = client->whitePixel;
+    dev->pScreen->blackPixel = client->blackPixel;
 
     return 0;
 }

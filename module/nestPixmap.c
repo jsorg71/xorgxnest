@@ -36,6 +36,7 @@ pixmap calls
 /* all driver need this */
 #include <xf86.h>
 #include <xf86_OSproc.h>
+#include <mi.h>
 
 #include "nest.h"
 #include "nestDraw.h"
@@ -57,16 +58,31 @@ PixmapPtr
 nestCreatePixmap(ScreenPtr pScreen, int width, int height, int depth,
                  unsigned usage_hint)
 {
-    nestPtr dev;
-    PixmapPtr rv;
+    PixmapPtr pPixmap;
 
-    LLOGLN(10, ("nestCreatePixmap: width %d height %d depth %d",
+    LLOGLN(0, ("nestCreatePixmap: width %d height %d depth %d",
            width, height, depth));
-    dev = nestGetDevFromScreen(pScreen);
-    pScreen->CreatePixmap = dev->CreatePixmap;
-    rv = pScreen->CreatePixmap(pScreen, width, height, depth, usage_hint);
-    pScreen->CreatePixmap = nestCreatePixmap;
-    return rv;
+    pPixmap = AllocatePixmap(pScreen, 0);
+    if (pPixmap == NULL)
+    {
+        return NullPixmap;
+    }
+    pPixmap->drawable.type = DRAWABLE_PIXMAP;
+    pPixmap->drawable.class = 0;
+    pPixmap->drawable.depth = depth;
+    pPixmap->drawable.bitsPerPixel = depth;
+    pPixmap->drawable.id = 0;
+    pPixmap->drawable.x = 0;
+    pPixmap->drawable.y = 0;
+    pPixmap->drawable.width = width;
+    pPixmap->drawable.height = height;
+    pPixmap->drawable.pScreen = pScreen;
+    pPixmap->drawable.serialNumber = NEXT_SERIAL_NUMBER;
+    pPixmap->refcnt = 1;
+    pPixmap->devKind = PixmapBytePad(width, depth);
+    pPixmap->usage_hint = usage_hint;
+    LLOGLN(0, ("nestCreatePixmap: pPixmap %p", pPixmap));
+    return pPixmap;
 }
 
 #else
@@ -75,16 +91,31 @@ nestCreatePixmap(ScreenPtr pScreen, int width, int height, int depth,
 PixmapPtr
 nestCreatePixmap(ScreenPtr pScreen, int width, int height, int depth)
 {
-    nestPtr dev;
-    PixmapPtr rv;
+    PixmapPtr pPixmap;
 
-    LLOGLN(10, ("nestCreatePixmap: width %d height %d depth %d",
+    LLOGLN(0, ("nestCreatePixmap: width %d height %d depth %d",
            width, height, depth));
-    dev = nestGetDevFromScreen(pScreen);
-    pScreen->CreatePixmap = dev->CreatePixmap;
-    rv = pScreen->CreatePixmap(pScreen, width, height, depth);
-    pScreen->CreatePixmap = nestCreatePixmap;
-    return rv;
+    pPixmap = AllocatePixmap(pScreen, 0);
+    if (pPixmap == NULL)
+    {
+        return NullPixmap;
+    }
+    pPixmap->drawable.type = DRAWABLE_PIXMAP;
+    pPixmap->drawable.class = 0;
+    pPixmap->drawable.depth = depth;
+    pPixmap->drawable.bitsPerPixel = depth;
+    pPixmap->drawable.id = 0;
+    pPixmap->drawable.x = 0;
+    pPixmap->drawable.y = 0;
+    pPixmap->drawable.width = width;
+    pPixmap->drawable.height = height;
+    pPixmap->drawable.pScreen = pScreen;
+    pPixmap->drawable.serialNumber = NEXT_SERIAL_NUMBER;
+    pPixmap->refcnt = 1;
+    pPixmap->devKind = PixmapBytePad(width, depth);
+    pPixmap->usage_hint = usage_hint;
+    LLOGLN(0, ("nestCreatePixmap: pPixmap %p", pPixmap));
+    return pPixmap;
 }
 
 #endif
@@ -93,17 +124,15 @@ nestCreatePixmap(ScreenPtr pScreen, int width, int height, int depth)
 Bool
 nestDestroyPixmap(PixmapPtr pPixmap)
 {
-    Bool rv;
-    ScreenPtr pScreen;
-    nestPtr dev;
-
-    LLOGLN(10, ("nestDestroyPixmap: refcnt %d", pPixmap->refcnt));
-    pScreen = pPixmap->drawable.pScreen;
-    dev = nestGetDevFromScreen(pScreen);
-    pScreen->DestroyPixmap = dev->DestroyPixmap;
-    rv = pScreen->DestroyPixmap(pPixmap);
-    pScreen->DestroyPixmap = nestDestroyPixmap;
-    return rv;
+    LLOGLN(0, ("nestDestroyPixmap: pPixmap %p refcnt %d", pPixmap,
+           pPixmap->refcnt));
+    pPixmap->refcnt--;
+    if (pPixmap->refcnt != 0)
+    {
+        return TRUE;
+    }
+    FreePixmap(pPixmap);
+    return TRUE;
 }
 
 /******************************************************************************/
@@ -112,15 +141,24 @@ nestModifyPixmapHeader(PixmapPtr pPixmap, int width, int height, int depth,
                       int bitsPerPixel, int devKind, pointer pPixData)
 {
     Bool rv;
-    ScreenPtr pScreen;
-    nestPtr dev;
+    //ScreenPtr pScreen;
+    //nestPtr dev;
 
-    LLOGLN(10, ("nestModifyPixmapHeader:"));
-    pScreen = pPixmap->drawable.pScreen;
-    dev = nestGetDevFromScreen(pScreen);
-    pScreen->ModifyPixmapHeader = dev->ModifyPixmapHeader;
-    rv = pScreen->ModifyPixmapHeader(pPixmap, width, height, depth, bitsPerPixel,
-                                     devKind, pPixData);
-    pScreen->ModifyPixmapHeader = nestModifyPixmapHeader;
+    LLOGLN(0, ("nestModifyPixmapHeader: pPixmap %p width %d "
+           "height %d depth %d bitsPerPixel %d devKind %d pPixData %p",
+           pPixmap, width, height, depth, bitsPerPixel, devKind, pPixData));
+
+    rv = miModifyPixmapHeader(pPixmap, width, height, depth, bitsPerPixel, devKind, pPixData);
+
+    //pScreen = pPixmap->drawable.pScreen;
+    //dev = nestGetDevFromScreen(pScreen);
+    //pScreen->ModifyPixmapHeader = dev->ModifyPixmapHeader;
+    //rv = pScreen->ModifyPixmapHeader(pPixmap, width, height, depth, bitsPerPixel,
+    //                                 devKind, pPixData);
+    //pScreen->ModifyPixmapHeader = nestModifyPixmapHeader;
+    //return rv;
+
+    LLOGLN(0, ("nestModifyPixmapHeader: out"));
+
     return rv;
 }

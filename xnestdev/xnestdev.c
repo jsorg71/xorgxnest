@@ -492,8 +492,6 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
     }
 #endif
 
-    LLOGLN(0, ("1"));
-
     vis = pScreen->visuals + (pScreen->numVisuals - 1);
     while (vis >= pScreen->visuals)
     {
@@ -512,12 +510,8 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
     fbPictureInit(pScreen, 0, 0);
 #endif
 
-    LLOGLN(0, ("2"));
-
     xf86SetBlackWhitePixels(pScreen);
     xf86SetBackingStore(pScreen);
-
-    LLOGLN(0, ("3"));
 
 #if 1
     /* hardware cursor */

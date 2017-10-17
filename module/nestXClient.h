@@ -22,9 +22,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef __NESTXCLIENT_H
 #define __NESTXCLIENT_H
 
+#if !defined(_X11_XUTIL_H_)
 struct _nestXClientRec; /* defined in nestXClient.c */
 typedef struct _nestXClientRec nestXClientRec;
 typedef nestXClientRec *nestXClientPtr;
+#endif
 
 extern _X_EXPORT nestXClientPtr
 nestXClientCreate(const char *diplay_name);

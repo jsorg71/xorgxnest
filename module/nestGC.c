@@ -222,7 +222,7 @@ nestCreateGC(GCPtr pGC)
     ScreenPtr pScreen;
     nestGCPtr priv;
 
-    LLOGLN(10, ("nestCreateGC:"));
+    LLOGLN(0, ("nestCreateGC:"));
     pScreen = pGC->pScreen;
     dev = nestGetDevFromScreen(pScreen);
     priv = (nestGCPtr)nestGetGCPrivate(pGC, dev->privateKeyRecGC);
@@ -235,5 +235,6 @@ nestCreateGC(GCPtr pGC)
         pGC->funcs = &g_nestGCFuncs;
     }
     pScreen->CreateGC = nestCreateGC;
+    LLOGLN(0, ("nestCreateGC: out"));
     return rv;
 }
