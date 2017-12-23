@@ -139,6 +139,40 @@ nestFreeRec(ScrnInfoPtr pScrn)
 }
 
 /*****************************************************************************/
+static void
+nestGetImage(DrawablePtr pDrawable, int x, int y, int w, int h,
+             unsigned int format, unsigned long planeMask,
+             char *pImage)
+{
+    LLOGLN(0, ("nestGetImage:"));
+}
+
+/*****************************************************************************/
+static Bool
+nestCreateWindow(WindowPtr pWin)
+{
+    LLOGLN(0, ("nestCreateWindow:"));
+    return TRUE;
+}
+
+/*****************************************************************************/
+static Bool
+nestPositionWindow(WindowPtr pWin, int x, int y)
+{
+    LLOGLN(0, ("nestPositionWindow:"));
+    LLOGLN(0, ("nestPositionWindow: x %d y %d", x, y));
+    return TRUE;
+}
+
+/*****************************************************************************/
+Bool
+nestChangeWindowAttributes(WindowPtr pWin, unsigned long mask)
+{
+    LLOGLN(0, ("nestChangeWindowAttributes:"));
+    return TRUE;
+}
+
+/*****************************************************************************/
 static Bool
 nestPreInit(ScrnInfoPtr pScrn, int flags)
 {
@@ -567,6 +601,10 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
     pScreen->ModifyPixmapHeader = nestModifyPixmapHeader;
 
     pScreen->QueryBestSize = nestQueryBestSize;
+    pScreen->GetImage = nestGetImage;
+    pScreen->CreateWindow = nestCreateWindow;
+    pScreen->PositionWindow = nestPositionWindow;
+    pScreen->ChangeWindowAttributes = nestChangeWindowAttributes;
 
     ps = GetPictureScreenIfSet(pScreen);
     if (ps != 0)
