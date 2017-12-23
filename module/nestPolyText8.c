@@ -45,28 +45,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static int
-nestPolyText8Org(DrawablePtr pDrawable, GCPtr pGC,
-                 int x, int y, int count, char *chars)
-{
-    GC_OP_VARS;
-    int rv;
-
-    GC_OP_PROLOGUE(pGC);
-    rv = pGC->ops->PolyText8(pDrawable, pGC, x, y, count, chars);
-    GC_OP_EPILOGUE(pGC);
-    return rv;
-}
-
-/******************************************************************************/
 int
 nestPolyText8(DrawablePtr pDrawable, GCPtr pGC,
               int x, int y, int count, char *chars)
 {
     int rv;
 
-    LLOGLN(10, ("nestPolyText8:"));
-    /* do original call */
-    rv = nestPolyText8Org(pDrawable, pGC, x, y, count, chars);
+    LLOGLN(0, ("nestPolyText8:"));
+    rv = 0;
     return rv;
 }

@@ -44,23 +44,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static void
-nestFillSpansOrg(DrawablePtr pDrawable, GCPtr pGC, int nInit,
-                 DDXPointPtr pptInit, int *pwidthInit, int fSorted)
-{
-    GC_OP_VARS;
-
-    GC_OP_PROLOGUE(pGC);
-    pGC->ops->FillSpans(pDrawable, pGC, nInit, pptInit, pwidthInit, fSorted);
-    GC_OP_EPILOGUE(pGC);
-}
-
-/******************************************************************************/
 void
 nestFillSpans(DrawablePtr pDrawable, GCPtr pGC, int nInit,
               DDXPointPtr pptInit, int *pwidthInit, int fSorted)
 {
     LLOGLN(0, ("nestFillSpans:"));
-    /* do original call */
-    nestFillSpansOrg(pDrawable, pGC, nInit, pptInit, pwidthInit, fSorted);
 }

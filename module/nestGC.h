@@ -31,4 +31,8 @@ GC related calls
 extern _X_EXPORT Bool
 nestCreateGC(GCPtr pGC);
 
+extern _X_EXPORT void
+nestQueryBestSize(int class, unsigned short *pWidth, unsigned short *pHeight,
+                  ScreenPtr pScreen);
+
 #endif

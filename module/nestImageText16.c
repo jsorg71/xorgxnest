@@ -45,23 +45,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static void
-nestImageText16Org(DrawablePtr pDrawable, GCPtr pGC,
-                   int x, int y, int count, unsigned short *chars)
-{
-    GC_OP_VARS;
-
-    GC_OP_PROLOGUE(pGC);
-    pGC->ops->ImageText16(pDrawable, pGC, x, y, count, chars);
-    GC_OP_EPILOGUE(pGC);
-}
-
-/******************************************************************************/
 void
 nestImageText16(DrawablePtr pDrawable, GCPtr pGC,
                 int x, int y, int count, unsigned short *chars)
 {
-    LLOGLN(10, ("nestImageText16:"));
-    /* do original call */
-    nestImageText16Org(pDrawable, pGC, x, y, count, chars);
+    LLOGLN(0, ("nestImageText16:"));
 }

@@ -46,27 +46,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static RegionPtr
-nestCopyAreaOrg(DrawablePtr pSrc, DrawablePtr pDst, GCPtr pGC,
-                int srcx, int srcy, int w, int h, int dstx, int dsty)
-{
-    GC_OP_VARS;
-    RegionPtr rv;
-
-    GC_OP_PROLOGUE(pGC);
-    rv = pGC->ops->CopyArea(pSrc, pDst, pGC, srcx, srcy, w, h, dstx, dsty);
-    GC_OP_EPILOGUE(pGC);
-    return rv;
-}
-
-/******************************************************************************/
 RegionPtr
 nestCopyArea(DrawablePtr pSrc, DrawablePtr pDst, GCPtr pGC,
              int srcx, int srcy, int w, int h, int dstx, int dsty)
 {
     RegionPtr rv;
 
-    /* do original call */
-    rv = nestCopyAreaOrg(pSrc, pDst, pGC, srcx, srcy, w, h, dstx, dsty);
+    LLOGLN(0, ("nestCopyArea:"));
+    rv = NULL;
     return rv;
 }

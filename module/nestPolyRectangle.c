@@ -45,23 +45,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static void
-nestPolyRectangleOrg(DrawablePtr pDrawable, GCPtr pGC, int nrects,
-                     xRectangle *rects)
-{
-    GC_OP_VARS;
-
-    GC_OP_PROLOGUE(pGC);
-    pGC->ops->PolyRectangle(pDrawable, pGC, nrects, rects);
-    GC_OP_EPILOGUE(pGC);
-}
-
-/******************************************************************************/
 void
 nestPolyRectangle(DrawablePtr pDrawable, GCPtr pGC, int nrects,
                   xRectangle *rects)
 {
-    LLOGLN(10, ("nestPolyRectangle:"));
-    /* do original call */
-    nestPolyRectangleOrg(pDrawable, pGC, nrects, rects);
+    LLOGLN(0, ("nestPolyRectangle:"));
 }

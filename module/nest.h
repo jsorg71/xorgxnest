@@ -209,14 +209,8 @@ typedef struct _nestRec * nestPtr;
 
 struct _nestGCRec
 {
-/* changed to const in d89b42b */
-#if XORG_VERSION_CURRENT < XORG_VERSION_NUMERIC(1, 15, 99, 901, 0)
-    GCFuncs *funcs;
-    GCOps *ops;
-#else
-    const GCFuncs *funcs;
-    const GCOps *ops;
-#endif
+    long gc;
+    long nClipRects;
 };
 typedef struct _nestGCRec nestGCRec;
 typedef struct _nestGCRec * nestGCPtr;

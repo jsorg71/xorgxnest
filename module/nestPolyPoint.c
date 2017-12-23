@@ -45,23 +45,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static void
-nestPolyPointOrg(DrawablePtr pDrawable, GCPtr pGC, int mode,
-                 int npt, DDXPointPtr in_pts)
-{
-    GC_OP_VARS;
-
-    GC_OP_PROLOGUE(pGC);
-    pGC->ops->PolyPoint(pDrawable, pGC, mode, npt, in_pts);
-    GC_OP_EPILOGUE(pGC);
-}
-
-/******************************************************************************/
 void
 nestPolyPoint(DrawablePtr pDrawable, GCPtr pGC, int mode,
               int npt, DDXPointPtr in_pts)
 {
-    LLOGLN(10, ("nestPolyPoint:"));
-    /* do original call */
-    nestPolyPointOrg(pDrawable, pGC, mode, npt, in_pts);
+    LLOGLN(0, ("nestPolyPoint:"));
 }

@@ -46,20 +46,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /******************************************************************************/
 void
-nestPolySegmentOrg(DrawablePtr pDrawable, GCPtr pGC, int nseg, xSegment *pSegs)
-{
-    GC_OP_VARS;
-
-    GC_OP_PROLOGUE(pGC);
-    pGC->ops->PolySegment(pDrawable, pGC, nseg, pSegs);
-    GC_OP_EPILOGUE(pGC);
-}
-
-/******************************************************************************/
-void
 nestPolySegment(DrawablePtr pDrawable, GCPtr pGC, int nseg, xSegment *pSegs)
 {
-    LLOGLN(10, ("nestPolySegment:"));
-    /* do original call */
-    nestPolySegmentOrg(pDrawable, pGC, nseg, pSegs);
+    LLOGLN(0, ("nestPolySegment:"));
 }

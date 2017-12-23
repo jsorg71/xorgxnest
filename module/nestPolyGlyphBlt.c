@@ -46,24 +46,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /******************************************************************************/
 void
-nestPolyGlyphBltOrg(DrawablePtr pDrawable, GCPtr pGC,
-                    int x, int y, unsigned int nglyph,
-                    CharInfoPtr *ppci, pointer pglyphBase)
-{
-    GC_OP_VARS;
-
-    GC_OP_PROLOGUE(pGC);
-    pGC->ops->PolyGlyphBlt(pDrawable, pGC, x, y, nglyph, ppci, pglyphBase);
-    GC_OP_EPILOGUE(pGC);
-}
-
-/******************************************************************************/
-void
 nestPolyGlyphBlt(DrawablePtr pDrawable, GCPtr pGC,
                  int x, int y, unsigned int nglyph,
                  CharInfoPtr *ppci, pointer pglyphBase)
 {
     LLOGLN(0, ("nestPolyGlyphBlt:"));
-    /* do original call */
-    nestPolyGlyphBltOrg(pDrawable, pGC, x, y, nglyph, ppci, pglyphBase);
 }

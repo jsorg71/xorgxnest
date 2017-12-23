@@ -566,6 +566,8 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
     dev->ModifyPixmapHeader = pScreen->ModifyPixmapHeader;
     pScreen->ModifyPixmapHeader = nestModifyPixmapHeader;
 
+    pScreen->QueryBestSize = nestQueryBestSize;
+
     ps = GetPictureScreenIfSet(pScreen);
     if (ps != 0)
     {

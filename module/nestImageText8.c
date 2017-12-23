@@ -30,7 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /* this should be before all X11 .h files */
 #include <xorg-server.h>
 #include <xorgVersion.h>
- 
+
 /* all driver need this */
 #include <xf86.h>
 #include <xf86_OSproc.h>
@@ -45,23 +45,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static void
-nestImageText8Org(DrawablePtr pDrawable, GCPtr pGC,
-                  int x, int y, int count, char *chars)
-{
-    GC_OP_VARS;
-
-    GC_OP_PROLOGUE(pGC);
-    pGC->ops->ImageText8(pDrawable, pGC, x, y, count, chars);
-    GC_OP_EPILOGUE(pGC);
-}
-
-/******************************************************************************/
 void
 nestImageText8(DrawablePtr pDrawable, GCPtr pGC,
                int x, int y, int count, char *chars)
 {
-    LLOGLN(10, ("nestImageText8:"));
-    /* do original call */
-    nestImageText8Org(pDrawable, pGC, x, y, count, chars);
+    LLOGLN(0, ("nestImageText8:"));
 }

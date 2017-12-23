@@ -45,23 +45,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static void
-nestPolyFillRectOrg(DrawablePtr pDrawable, GCPtr pGC, int nrectFill,
-                    xRectangle *prectInit)
-{
-    GC_OP_VARS;
-
-    GC_OP_PROLOGUE(pGC);
-    pGC->ops->PolyFillRect(pDrawable, pGC, nrectFill, prectInit);
-    GC_OP_EPILOGUE(pGC);
-}
-
-/******************************************************************************/
 void
 nestPolyFillRect(DrawablePtr pDrawable, GCPtr pGC, int nrectFill,
                  xRectangle *prectInit)
 {
-    LLOGLN(10, ("nestPolyFillRect:"));
-    /* do original call */
-    nestPolyFillRectOrg(pDrawable, pGC, nrectFill, prectInit);
+    int index;
+    LLOGLN(0, ("nestPolyFillRect:"));
+    LLOGLN(0, ("  nrectFill %d pDrawable %p pGC %p", nrectFill, pDrawable, pGC));
+    for (index = 0; index < nrectFill; index++)
+    {
+        LLOGLN(0, ("    x %d y %d cx %d cy %d",
+               prectInit[index].x, prectInit[index].y,
+               prectInit[index].width, prectInit[index].height));
+    }
 }

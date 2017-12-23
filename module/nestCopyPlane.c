@@ -45,22 +45,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static RegionPtr
-nestCopyPlaneOrg(DrawablePtr pSrc, DrawablePtr pDst,
-                 GCPtr pGC, int srcx, int srcy, int w, int h,
-                 int dstx, int dsty, unsigned long bitPlane)
-{
-    GC_OP_VARS;
-    RegionPtr rv;
-
-    GC_OP_PROLOGUE(pGC);
-    rv = pGC->ops->CopyPlane(pSrc, pDst, pGC, srcx, srcy,
-                             w, h, dstx, dsty, bitPlane);
-    GC_OP_EPILOGUE(pGC);
-    return rv;
-}
-
-/******************************************************************************/
 RegionPtr
 nestCopyPlane(DrawablePtr pSrc, DrawablePtr pDst,
              GCPtr pGC, int srcx, int srcy, int w, int h,
@@ -68,9 +52,7 @@ nestCopyPlane(DrawablePtr pSrc, DrawablePtr pDst,
 {
     RegionPtr rv;
 
-    LLOGLN(10, ("nestCopyPlane:"));
-    /* do original call */
-    rv = nestCopyPlaneOrg(pSrc, pDst, pGC, srcx, srcy, w, h,
-                          dstx, dsty, bitPlane);
+    LLOGLN(0, ("nestCopyPlane:"));
+    rv = NULL;
     return rv;
 }

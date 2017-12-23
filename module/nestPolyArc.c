@@ -45,21 +45,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static void
-nestPolyArcOrg(DrawablePtr pDrawable, GCPtr pGC, int narcs, xArc *parcs)
-{
-    GC_OP_VARS;
-
-    GC_OP_PROLOGUE(pGC);
-    pGC->ops->PolyArc(pDrawable, pGC, narcs, parcs);
-    GC_OP_EPILOGUE(pGC);
-}
-
-/******************************************************************************/
 void
 nestPolyArc(DrawablePtr pDrawable, GCPtr pGC, int narcs, xArc *parcs)
 {
     LLOGLN(0, ("nestPolyArc:"));
-    /* do original call */
-    nestPolyArcOrg(pDrawable, pGC, narcs, parcs);
 }

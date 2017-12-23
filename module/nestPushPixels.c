@@ -44,23 +44,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static void
-nestPushPixelsOrg(GCPtr pGC, PixmapPtr pBitMap, DrawablePtr pDst,
-                  int w, int h, int x, int y)
-{
-    GC_OP_VARS;
-
-    GC_OP_PROLOGUE(pGC);
-    pGC->ops->PushPixels(pGC, pBitMap, pDst, w, h, x, y);
-    GC_OP_EPILOGUE(pGC);
-}
-
-/******************************************************************************/
 void
 nestPushPixels(GCPtr pGC, PixmapPtr pBitMap, DrawablePtr pDst,
               int w, int h, int x, int y)
 {
     LLOGLN(0, ("nestPushPixels:"));
-    /* do original call */
-    nestPushPixelsOrg(pGC, pBitMap, pDst, w, h, x, y);
 }

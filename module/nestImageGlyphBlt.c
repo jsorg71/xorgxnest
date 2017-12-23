@@ -45,25 +45,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static void
-nestImageGlyphBltOrg(DrawablePtr pDrawable, GCPtr pGC,
-                     int x, int y, unsigned int nglyph,
-                     CharInfoPtr *ppci, pointer pglyphBase)
-{
-    GC_OP_VARS;
-
-    GC_OP_PROLOGUE(pGC);
-    pGC->ops->ImageGlyphBlt(pDrawable, pGC, x, y, nglyph, ppci, pglyphBase);
-    GC_OP_EPILOGUE(pGC);
-}
-
-/******************************************************************************/
 void
 nestImageGlyphBlt(DrawablePtr pDrawable, GCPtr pGC,
                   int x, int y, unsigned int nglyph,
                   CharInfoPtr *ppci, pointer pglyphBase)
 {
     LLOGLN(0, ("nestImageGlyphBlt:"));
-    /* do original call */
-    nestImageGlyphBltOrg(pDrawable, pGC, x, y, nglyph, ppci, pglyphBase);
 }

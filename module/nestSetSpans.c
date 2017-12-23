@@ -47,22 +47,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /******************************************************************************/
 void
-nestSetSpansOrg(DrawablePtr pDrawable, GCPtr pGC, char *psrc,
-                DDXPointPtr ppt, int *pwidth, int nspans, int fSorted)
-{
-    GC_OP_VARS;
-
-    GC_OP_PROLOGUE(pGC);
-    pGC->ops->SetSpans(pDrawable, pGC, psrc, ppt, pwidth, nspans, fSorted);
-    GC_OP_EPILOGUE(pGC);
-}
-
-/******************************************************************************/
-void
 nestSetSpans(DrawablePtr pDrawable, GCPtr pGC, char *psrc,
              DDXPointPtr ppt, int *pwidth, int nspans, int fSorted)
 {
     LLOGLN(0, ("nestSetSpans:"));
-    /* do original call */
-    nestSetSpansOrg(pDrawable, pGC, psrc, ppt, pwidth, nspans, fSorted);
 }

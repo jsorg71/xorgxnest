@@ -53,32 +53,6 @@ misc draw calls
     ) \
 )
 
-/******************************************************************************/
-/* changed to const in d89b42b */
-#if XORG_VERSION_CURRENT < XORG_VERSION_NUMERIC(1, 15, 99, 901, 0)
-#define GC_OP_VARS nestPtr dev; nestGCPtr priv; GCFuncs *oldFuncs
-#else
-#define GC_OP_VARS nestPtr dev; nestGCPtr priv; const GCFuncs *oldFuncs
-#endif
-
-/******************************************************************************/
-#define GC_OP_PROLOGUE(_pGC) \
-do { \
-    dev = nestGetDevFromScreen((_pGC)->pScreen); \
-    priv = (nestGCPtr)nestGetGCPrivate(_pGC, dev->privateKeyRecGC); \
-    oldFuncs = (_pGC)->funcs; \
-    (_pGC)->funcs = priv->funcs; \
-    (_pGC)->ops = priv->ops; \
-} while (0)
-
-/******************************************************************************/
-#define GC_OP_EPILOGUE(_pGC) \
-do { \
-    priv->ops = (_pGC)->ops; \
-    (_pGC)->funcs = oldFuncs; \
-    (_pGC)->ops = &g_nestGCOps; \
-} while (0)
-
 extern GCOps g_nestGCOps; /* in nestGC.c */
 
 extern _X_EXPORT void

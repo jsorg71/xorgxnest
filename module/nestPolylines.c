@@ -45,23 +45,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static void
-nestPolylinesOrg(DrawablePtr pDrawable, GCPtr pGC, int mode,
-                 int npt, DDXPointPtr pptInit)
-{
-    GC_OP_VARS;
-
-    GC_OP_PROLOGUE(pGC);
-    pGC->ops->Polylines(pDrawable, pGC, mode, npt, pptInit);
-    GC_OP_EPILOGUE(pGC);
-}
-
-/******************************************************************************/
 void
 nestPolylines(DrawablePtr pDrawable, GCPtr pGC, int mode,
               int npt, DDXPointPtr pptInit)
 {
-    LLOGLN(10, ("nestPolylines:"));
-    /* do original call */
-    nestPolylinesOrg(pDrawable, pGC, mode, npt, pptInit);
+    LLOGLN(0, ("nestPolylines:"));
 }

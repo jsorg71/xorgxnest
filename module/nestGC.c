@@ -71,33 +71,6 @@ GC related calls
 #define LLOGLN(_level, _args) \
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
-/******************************************************************************/
-#define GC_FUNC_VARS nestPtr dev; nestGCPtr priv;
-
-/******************************************************************************/
-#define GC_FUNC_PROLOGUE(_pGC) \
-    do { \
-        dev = nestGetDevFromScreen((_pGC)->pScreen); \
-        priv = (nestGCPtr)nestGetGCPrivate(_pGC, dev->privateKeyRecGC); \
-        (_pGC)->funcs = priv->funcs; \
-        if (priv->ops != 0) \
-        { \
-            (_pGC)->ops = priv->ops; \
-        } \
-    } while (0)
-
-/******************************************************************************/
-#define GC_FUNC_EPILOGUE(_pGC) \
-    do { \
-        priv->funcs = (_pGC)->funcs; \
-        (_pGC)->funcs = &g_nestGCFuncs; \
-        if (priv->ops != 0) \
-        { \
-            priv->ops = (_pGC)->ops; \
-            (_pGC)->ops = &g_nestGCOps; \
-        } \
-    } while (0)
-
 static void
 nestValidateGC(GCPtr pGC, unsigned long changes, DrawablePtr d);
 static void
@@ -132,109 +105,104 @@ GCOps g_nestGCOps =
 static void
 nestValidateGC(GCPtr pGC, unsigned long changes, DrawablePtr d)
 {
-    GC_FUNC_VARS;
-
-    LLOGLN(10, ("nestValidateGC:"));
-    GC_FUNC_PROLOGUE(pGC);
-    pGC->funcs->ValidateGC(pGC, changes, d);
-    priv->ops = pGC->ops;
-    GC_FUNC_EPILOGUE(pGC);
+    LLOGLN(0, ("nestValidateGC:"));
 }
 
 /******************************************************************************/
 static void
 nestChangeGC(GCPtr pGC, unsigned long mask)
 {
-    GC_FUNC_VARS;
-
-    LLOGLN(10, ("nestChangeGC:"));
-    GC_FUNC_PROLOGUE(pGC);
-    pGC->funcs->ChangeGC(pGC, mask);
-    GC_FUNC_EPILOGUE(pGC);
+    LLOGLN(0, ("nestChangeGC:"));
 }
 
 /******************************************************************************/
 static void
 nestCopyGC(GCPtr src, unsigned long mask, GCPtr dst)
 {
-    GC_FUNC_VARS;
-
-    LLOGLN(10, ("nestCopyGC:"));
-    GC_FUNC_PROLOGUE(dst);
-    dst->funcs->CopyGC(src, mask, dst);
-    GC_FUNC_EPILOGUE(dst);
+    LLOGLN(0, ("nestCopyGC:"));
 }
 
 /******************************************************************************/
 static void
 nestDestroyGC(GCPtr pGC)
 {
-    GC_FUNC_VARS;
-
-    LLOGLN(10, ("nestDestroyGC:"));
-    GC_FUNC_PROLOGUE(pGC);
-    pGC->funcs->DestroyGC(pGC);
-    GC_FUNC_EPILOGUE(pGC);
+    LLOGLN(0, ("nestDestroyGC:"));
 }
 
 /******************************************************************************/
 static void
 nestChangeClip(GCPtr pGC, int type, pointer pValue, int nrects)
 {
-    GC_FUNC_VARS;
-
-    LLOGLN(10, ("nestChangeClip:"));
-    GC_FUNC_PROLOGUE(pGC);
-    pGC->funcs->ChangeClip(pGC, type, pValue, nrects);
-    GC_FUNC_EPILOGUE(pGC);
+    LLOGLN(0, ("nestChangeClip:"));
 }
 
 /******************************************************************************/
 static void
 nestDestroyClip(GCPtr pGC)
 {
-    GC_FUNC_VARS;
-
-    LLOGLN(10, ("nestDestroyClip:"));
-    GC_FUNC_PROLOGUE(pGC);
-    pGC->funcs->DestroyClip(pGC);
-    GC_FUNC_EPILOGUE(pGC);
+    LLOGLN(0, ("nestDestroyClip:"));
 }
 
 /******************************************************************************/
 static void
 nestCopyClip(GCPtr dst, GCPtr src)
 {
-    GC_FUNC_VARS;
-
-    LLOGLN(10, ("nestCopyClip:"));
-    GC_FUNC_PROLOGUE(dst);
-    dst->funcs->CopyClip(dst, src);
-    GC_FUNC_EPILOGUE(dst);
+    LLOGLN(0, ("nestCopyClip:"));
 }
 
 /*****************************************************************************/
 Bool
 nestCreateGC(GCPtr pGC)
 {
-    Bool rv;
     nestPtr dev;
-    ScreenPtr pScreen;
     nestGCPtr priv;
 
     LLOGLN(0, ("nestCreateGC:"));
-    pScreen = pGC->pScreen;
-    dev = nestGetDevFromScreen(pScreen);
-    priv = (nestGCPtr)nestGetGCPrivate(pGC, dev->privateKeyRecGC);
-    pScreen->CreateGC = dev->CreateGC;
-    rv = pScreen->CreateGC(pGC);
-    if (rv)
+    LLOGLN(0, ("nestCreateGC: pGC %p pScreen %p", pGC, pGC->pScreen));
+    if (pGC->pScreen == NULL)
     {
-        priv->funcs = pGC->funcs;
-        priv->ops = 0;
-        pGC->funcs = &g_nestGCFuncs;
+        return FALSE;
     }
-    pScreen->CreateGC = nestCreateGC;
-    LLOGLN(0, ("nestCreateGC: out"));
-    return rv;
+    dev = nestGetDevFromScreen(pGC->pScreen);
+    if (dev == NULL)
+    {
+        return FALSE;
+    }
+    priv = nestGetGCPrivate(pGC, dev->privateKeyRecGC);
+    if (priv == NULL)
+    {
+        return FALSE;
+    }
+#if XORG_VERSION_CURRENT < XORG_VERSION_NUMERIC(1, 16, 99, 901, 0)
+    pGC->clientClipType = CT_NONE;
+#endif
+    pGC->clientClip = NULL;
+    pGC->funcs = &g_nestGCFuncs;
+    pGC->ops = &g_nestGCOps;
+    pGC->miTranslate = 1;
+    priv->gc = 0;
+    priv->nClipRects = 0;
+    LLOGLN(0, ("nestCreateGC: ok"));
+    return TRUE;
+}
+
+/*****************************************************************************/
+void
+nestQueryBestSize(int class, unsigned short *pWidth, unsigned short *pHeight,
+                  ScreenPtr pScreen)
+{
+    unsigned int width;
+    unsigned int height;
+
+    LLOGLN(0, ("nestQueryBestSize:"));
+    LLOGLN(0, ("nestQueryBestSize: width %d height %d", *pWidth, *pHeight));
+    width = *pWidth;
+    height = *pHeight;
+
+    //XQueryBestSize(xnestDisplay, class,
+    //       xnestDefaultWindows[pScreen->myNum],
+    //       width, height, &width, &height);
+
+    *pWidth = width;
+    *pHeight = height;
 }

@@ -46,24 +46,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /******************************************************************************/
 void
-nestFillPolygonOrg(DrawablePtr pDrawable, GCPtr pGC,
-                   int shape, int mode, int count,
-                   DDXPointPtr pPts)
-{
-    GC_OP_VARS;
-
-    GC_OP_PROLOGUE(pGC);
-    pGC->ops->FillPolygon(pDrawable, pGC, shape, mode, count, pPts);
-    GC_OP_EPILOGUE(pGC);
-}
-
-/******************************************************************************/
-void
 nestFillPolygon(DrawablePtr pDrawable, GCPtr pGC,
                 int shape, int mode, int count,
                 DDXPointPtr pPts)
 {
-    LLOGLN(10, ("nestFillPolygon:"));
-    /* do original call */
-    nestFillPolygonOrg(pDrawable, pGC, shape, mode, count, pPts);
+    LLOGLN(0, ("nestFillPolygon:"));
 }

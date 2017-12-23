@@ -45,23 +45,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static void
-nestPutImageOrg(DrawablePtr pDst, GCPtr pGC, int depth, int x, int y,
-                int w, int h, int leftPad, int format, char *pBits)
-{
-    GC_OP_VARS;
-
-    GC_OP_PROLOGUE(pGC);
-    pGC->ops->PutImage(pDst, pGC, depth, x, y, w, h, leftPad,
-                       format, pBits);
-    GC_OP_EPILOGUE(pGC);
-}
-
-/******************************************************************************/
 void
 nestPutImage(DrawablePtr pDst, GCPtr pGC, int depth, int x, int y,
              int w, int h, int leftPad, int format, char *pBits)
 {
-    /* do original call */
-    nestPutImageOrg(pDst, pGC, depth, x, y, w, h, leftPad, format, pBits);
+    LLOGLN(0, ("nestPutImage:"));
 }
