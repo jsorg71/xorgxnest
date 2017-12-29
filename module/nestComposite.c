@@ -51,19 +51,6 @@ composite(alpha blending) calls
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static void
-nestCompositeOrg(PictureScreenPtr ps, nestPtr dev,
-                 CARD8 op, PicturePtr pSrc, PicturePtr pMask, PicturePtr pDst,
-                 INT16 xSrc, INT16 ySrc, INT16 xMask, INT16 yMask,
-                 INT16 xDst, INT16 yDst, CARD16 width, CARD16 height)
-{
-    ps->Composite = dev->Composite;
-    ps->Composite(op, pSrc, pMask, pDst, xSrc, ySrc, xMask, yMask,
-                  xDst, yDst, width, height);
-    ps->Composite = nestComposite;
-}
-
-/******************************************************************************/
 void
 nestComposite(CARD8 op, PicturePtr pSrc, PicturePtr pMask, PicturePtr pDst,
               INT16 xSrc, INT16 ySrc, INT16 xMask, INT16 yMask, INT16 xDst,
@@ -77,7 +64,4 @@ nestComposite(CARD8 op, PicturePtr pSrc, PicturePtr pMask, PicturePtr pDst,
     pScreen = pDst->pDrawable->pScreen;
     dev = nestGetDevFromScreen(pScreen);
     ps = GetPictureScreen(pScreen);
-    /* do original call */
-    nestCompositeOrg(ps, dev, op, pSrc, pMask, pDst, xSrc, ySrc,
-                     xMask, yMask, xDst, yDst, width, height);
 }

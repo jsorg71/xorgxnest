@@ -67,16 +67,9 @@ nestCopyWindow(WindowPtr pWin, DDXPointRec ptOldOrg, RegionPtr pOldRegion)
 Bool
 nestCloseScreen(int index, ScreenPtr pScreen)
 {
-    nestPtr dev;
-    Bool rv;
-
     LLOGLN(0, ("nestCloseScreen:"));
-    dev = nestGetDevFromScreen(pScreen);
-    dev->pScreen->CloseScreen = dev->CloseScreen;
-    rv = dev->pScreen->CloseScreen(index, pScreen);
-    dev->pScreen->CloseScreen = nestCloseScreen;
     xorgxnestDownDown(pScreen);
-    return rv;
+    return TRUE;
 }
 
 #else
@@ -85,16 +78,9 @@ nestCloseScreen(int index, ScreenPtr pScreen)
 Bool
 nestCloseScreen(ScreenPtr pScreen)
 {
-    nestPtr dev;
-    Bool rv;
-
     LLOGLN(0, ("nestCloseScreen:"));
-    dev = nestGetDevFromScreen(pScreen);
-    dev->pScreen->CloseScreen = dev->CloseScreen;
-    rv = dev->pScreen->CloseScreen(pScreen);
-    dev->pScreen->CloseScreen = nestCloseScreen;
     xorgxnestDownDown(pScreen);
-    return rv;
+    return TRUE;
 }
 
 #endif

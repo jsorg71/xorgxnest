@@ -52,20 +52,6 @@ glyph (font) calls
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static void
-nestGlyphsOrg(PictureScreenPtr ps, nestPtr dev,
-              CARD8 op, PicturePtr pSrc, PicturePtr pDst,
-              PictFormatPtr maskFormat,
-              INT16 xSrc, INT16 ySrc, int nlists, GlyphListPtr lists,
-              GlyphPtr *glyphs)
-{
-    ps->Glyphs = dev->Glyphs;
-    ps->Glyphs(op, pSrc, pDst, maskFormat, xSrc, ySrc,
-               nlists, lists, glyphs);
-    ps->Glyphs = nestGlyphs;
-}
-
-/******************************************************************************/
 void
 nestGlyphs(CARD8 op, PicturePtr pSrc, PicturePtr pDst,
            PictFormatPtr maskFormat,
@@ -80,6 +66,4 @@ nestGlyphs(CARD8 op, PicturePtr pSrc, PicturePtr pDst,
     pScreen = pDst->pDrawable->pScreen;
     dev = nestGetDevFromScreen(pScreen);
     ps = GetPictureScreen(pScreen);
-    nestGlyphsOrg(ps, dev, op, pSrc, pDst, maskFormat, xSrc, ySrc,
-                  nlists, lists, glyphs);
 }

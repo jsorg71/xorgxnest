@@ -150,21 +150,21 @@ struct _nestRec
     int Bpp;
     int Bpp_mask;
     int pad0;
-    char *pfbMemory_alloc;
-    char *pfbMemory;
+    //char *pfbMemory_alloc;
+    //char *pfbMemory;
     ScreenPtr pScreen;
     nestDevPrivateKey privateKeyRecGC;
     nestDevPrivateKey privateKeyRecPixmap;
 
-    CopyWindowProcPtr CopyWindow;
-    CreateGCProcPtr CreateGC;
-    CreatePixmapProcPtr CreatePixmap;
-    DestroyPixmapProcPtr DestroyPixmap;
-    ModifyPixmapHeaderProcPtr ModifyPixmapHeader;
-    CloseScreenProcPtr CloseScreen;
-    CompositeProcPtr Composite;
-    GlyphsProcPtr Glyphs;
-    TrapezoidsProcPtr Trapezoids;
+    //CopyWindowProcPtr CopyWindow;
+    //CreateGCProcPtr CreateGC;
+    //CreatePixmapProcPtr CreatePixmap;
+    //DestroyPixmapProcPtr DestroyPixmap;
+    //ModifyPixmapHeaderProcPtr ModifyPixmapHeader;
+    //CloseScreenProcPtr CloseScreen;
+    //CompositeProcPtr Composite;
+    //GlyphsProcPtr Glyphs;
+    //TrapezoidsProcPtr Trapezoids;
 
     /* keyboard and mouse */
     miPointerScreenFuncPtr pCursorFuncs;

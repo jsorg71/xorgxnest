@@ -37,12 +37,7 @@ This is the main driver file
 #include <xf86.h>
 #include <xf86_OSproc.h>
 
-#define USE_FB 0
-
 #include <mipointer.h>
-#if USE_FB
-#include <fb.h>
-#endif
 #include <micmap.h>
 #include <mi.h>
 
@@ -170,6 +165,44 @@ nestChangeWindowAttributes(WindowPtr pWin, unsigned long mask)
 {
     LLOGLN(0, ("nestChangeWindowAttributes:"));
     return TRUE;
+}
+
+/*****************************************************************************/
+Bool
+nestRealizeWindow(WindowPtr pWin)
+{
+    LLOGLN(0, ("nestRealizeWindow:"));
+    return TRUE;
+}
+
+/*****************************************************************************/
+Bool
+nestUnrealizeWindow(WindowPtr pWin)
+{
+    LLOGLN(0, ("nestUnrealizeWindow:"));
+    return TRUE;
+}
+
+/*****************************************************************************/
+Bool
+nestDestroyWindow(WindowPtr pWin)
+{
+    LLOGLN(0, ("nestUnrealizeWindow:"));
+    return TRUE;
+}
+
+/*****************************************************************************/
+void
+nestWindowExposures(WindowPtr pWin, RegionPtr pRgn, RegionPtr other_exposed)
+{
+    LLOGLN(0, ("nestWindowExposures:"));
+}
+
+/*****************************************************************************/
+void
+nestClipNotify(WindowPtr pWin, int dx, int dy)
+{
+    LLOGLN(0, ("nestClipNotify:"));
 }
 
 /*****************************************************************************/
@@ -414,7 +447,6 @@ nestDeferredRandR(OsTimerPtr timer, CARD32 now, pointer arg)
     pRRScrPriv->rrGetPanning         = nestRRGetPanning;
     pRRScrPriv->rrSetPanning         = nestRRSetPanning;
 
-
     nestResizeSession(dev, 1024, 768);
 
     envvar = getenv("XNEST_START_WIDTH");
@@ -494,22 +526,7 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
     dev->paddedWidthInBytes = PixmapBytePad(dev->width, dev->depth);
     dev->bitsPerPixel = nestBitsPerPixel(dev->depth);
     dev->sizeInBytes = dev->paddedWidthInBytes * dev->height;
-#if USE_FB
-    LLOGLN(0, ("nestScreenInit: pfbMemory bytes %d", dev->sizeInBytes));
-    dev->pfbMemory_alloc = g_new0(char, dev->sizeInBytes + 16);
-    dev->pfbMemory = (char *) NESTALIGN(dev->pfbMemory_alloc, 16);
-    LLOGLN(0, ("nestScreenInit: pfbMemory %p", dev->pfbMemory));
-    if (!fbScreenInit(pScreen, dev->pfbMemory,
-                      pScrn->virtualX, pScrn->virtualY,
-                      pScrn->xDpi, pScrn->yDpi, pScrn->displayWidth,
-                      pScrn->bitsPerPixel))
-    {
-        LLOGLN(0, ("nestScreenInit: fbScreenInit failed"));
-        return FALSE;
-    }
-#else
     nestXClientSetupScreen(dev);
-#endif
 #if XORG_VERSION_CURRENT < XORG_VERSION_NUMERIC(1, 14, 0, 0, 0)
     /* 1.13 has this function, 1.14 and up does not */
     miInitializeBackingStore(pScreen);
@@ -540,9 +557,6 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
         }
         vis--;
     }
-#if USE_FB
-    fbPictureInit(pScreen, 0, 0);
-#endif
 
     xf86SetBlackWhitePixels(pScreen);
     xf86SetBackingStore(pScreen);
@@ -556,9 +570,6 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
     /* software cursor */
     dev->pCursorFuncs = xf86GetPointerScreenFuncs();
     miDCInitialize(pScreen, dev->pCursorFuncs);
-#endif
-#if USE_FB
-    fbCreateDefColormap(pScreen);
 #endif
     /* must assign this one */
     pScreen->SaveScreen = nestSaveScreen;
@@ -582,41 +593,32 @@ nestScreenInit(ScreenPtr pScreen, int argc, char **argv)
     dev->privateKeyRecGC = nestAllocateGCPrivate(pScreen, sizeof(nestGCRec));
     dev->privateKeyRecPixmap = nestAllocatePixmapPrivate(pScreen, sizeof(nestPixmapRec));
 
-    dev->CloseScreen = pScreen->CloseScreen;
     pScreen->CloseScreen = nestCloseScreen;
-
-    dev->CopyWindow = pScreen->CopyWindow;
-    pScreen->CopyWindow = nestCopyWindow;
-
-    dev->CreateGC = pScreen->CreateGC;
     pScreen->CreateGC = nestCreateGC;
-
-    dev->CreatePixmap = pScreen->CreatePixmap;
     pScreen->CreatePixmap = nestCreatePixmap;
-
-    dev->DestroyPixmap = pScreen->DestroyPixmap;
     pScreen->DestroyPixmap = nestDestroyPixmap;
-
-    dev->ModifyPixmapHeader = pScreen->ModifyPixmapHeader;
     pScreen->ModifyPixmapHeader = nestModifyPixmapHeader;
-
     pScreen->QueryBestSize = nestQueryBestSize;
     pScreen->GetImage = nestGetImage;
+
     pScreen->CreateWindow = nestCreateWindow;
+    pScreen->DestroyWindow = nestDestroyWindow;
+    pScreen->RealizeWindow = nestRealizeWindow;
+    pScreen->UnrealizeWindow = nestUnrealizeWindow;
+    pScreen->CopyWindow = nestCopyWindow;
     pScreen->PositionWindow = nestPositionWindow;
     pScreen->ChangeWindowAttributes = nestChangeWindowAttributes;
+    pScreen->WindowExposures = nestWindowExposures;
+    pScreen->ClipNotify = nestClipNotify;
 
     ps = GetPictureScreenIfSet(pScreen);
     if (ps != 0)
     {
         /* composite */
-        dev->Composite = ps->Composite;
         ps->Composite = nestComposite;
         /* glyphs */
-        dev->Glyphs = ps->Glyphs;
         ps->Glyphs = nestGlyphs;
         /* trapezoids */
-        dev->Trapezoids = ps->Trapezoids;
         ps->Trapezoids = nestTrapezoids;
     }
 
@@ -722,14 +724,6 @@ nestProbe(DriverPtr drv, int flags)
     {
         return FALSE;
     }
-#if USE_FB
-    /* fbScreenInit, fbPictureInit, ... */
-    if (!xf86LoadDrvSubModule(drv, "fb"))
-    {
-        LLOGLN(0, ("nestProbe: xf86LoadDrvSubModule for fb failed"));
-        return FALSE;
-    }
-#endif
     num_dev_sections = xf86MatchDevice(XNEST_DRIVER_NAME, &dev_sections);
     if (num_dev_sections <= 0)
     {

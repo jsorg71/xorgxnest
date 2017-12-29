@@ -49,18 +49,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     do { if (_level < LOG_LEVEL) { ErrorF _args ; ErrorF("\n"); } } while (0)
 
 /******************************************************************************/
-static void
-nestTrapezoidsOrg(PictureScreenPtr ps, nestPtr dev,
-                  CARD8 op, PicturePtr pSrc, PicturePtr pDst,
-                  PictFormatPtr maskFormat, INT16 xSrc, INT16 ySrc,
-                  int ntrap, xTrapezoid *traps)
-{
-    ps->Trapezoids = dev->Trapezoids;
-    ps->Trapezoids(op, pSrc, pDst, maskFormat, xSrc, ySrc, ntrap, traps);
-    ps->Trapezoids = nestTrapezoids;
-}
-
-/******************************************************************************/
 void
 nestTrapezoids(CARD8 op, PicturePtr pSrc, PicturePtr pDst,
                PictFormatPtr maskFormat, INT16 xSrc, INT16 ySrc,
@@ -74,7 +62,4 @@ nestTrapezoids(CARD8 op, PicturePtr pSrc, PicturePtr pDst,
     pScreen = pDst->pDrawable->pScreen;
     dev = nestGetDevFromScreen(pScreen);
     ps = GetPictureScreen(pScreen);
-    /* do original call */
-    nestTrapezoidsOrg(ps, dev, op, pSrc, pDst, maskFormat, xSrc, ySrc,
-                      ntrap, traps);
 }

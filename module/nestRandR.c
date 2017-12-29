@@ -120,6 +120,7 @@ nestRRScreenSetSize(ScreenPtr pScreen, CARD16 width, CARD16 height,
     pScreen->mmWidth = mmWidth;
     pScreen->mmHeight = mmHeight;
     screenPixmap = pScreen->GetScreenPixmap(pScreen);
+#if 0
     free(dev->pfbMemory_alloc);
     dev->pfbMemory_alloc = g_new0(char, dev->sizeInBytes + 16);
     dev->pfbMemory = (char *) NESTALIGN(dev->pfbMemory_alloc, 16);
@@ -130,6 +131,7 @@ nestRRScreenSetSize(ScreenPtr pScreen, CARD16 width, CARD16 height,
                                     dev->paddedWidthInBytes,
                                     dev->pfbMemory);
     }
+#endif
     box.x1 = 0;
     box.y1 = 0;
     box.x2 = width;
